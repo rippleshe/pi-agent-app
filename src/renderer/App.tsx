@@ -56,12 +56,16 @@ export default function App() {
       setStreamingContent(prev => prev + delta);
     };
 
-    // 注册监听器
-    window.electronAPI.onAIDelta(handleAIDelta);
+    // 注册监听器（仅在 Electron 环境中）
+    if (window.electronAPI) {
+      window.electronAPI.onAIDelta(handleAIDelta);
+    }
 
     // 清理函数：组件卸载时移除监听器
     return () => {
-      window.electronAPI.removeAIDeltaListener();
+      if (window.electronAPI) {
+        window.electronAPI.removeAIDeltaListener();
+      }
     };
   }, []);
 
@@ -100,6 +104,9 @@ export default function App() {
 
     // 发送到主进程
     try {
+      if (!window.electronAPI) {
+        throw new Error('Electron API not available');
+      }
       const result = await window.electronAPI.sendMessage(content.trim());
       
       if (result.error) {

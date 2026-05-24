@@ -12,10 +12,10 @@
     "rootDir": "./src/renderer",
     "declaration": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/renderer/*"]
-    }
+    },
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/renderer/**/*"],
   "exclude": ["node_modules", "dist"]
