@@ -1,95 +1,86 @@
 /**
- * 类型定义文件
- * 
- * 定义应用中使用的 TypeScript 类型和接口
+ * 应用类型定义
+ *
+ * 统一管理所有 TypeScript 接口和类型
  */
 
-/**
- * 消息角色类型
- */
+// ── 消息相关 ───────────────────────────────────────────────────────
+
+/** 消息角色 */
 export type MessageRole = 'user' | 'assistant' | 'system';
 
-/**
- * 聊天消息接口
- */
+/** 聊天消息 */
 export interface Message {
-  /** 消息唯一标识 */
+  /** 唯一标识 */
   id: string;
-  
-  /** 消息发送者角色 */
+  /** 发送者角色 */
   role: MessageRole;
-  
   /** 消息内容 */
   content: string;
-  
-  /** 消息时间戳 */
+  /** 时间戳 */
   timestamp: number;
 }
 
-/**
- * 工具配置接口
- */
+// ── 工具相关 ───────────────────────────────────────────────────────
+
+/** 工具配置 */
 export interface ToolConfig {
-  /** 工具唯一标识 */
+  /** 工具 ID（对应 pi SDK 内置工具名） */
   id: string;
-  
-  /** 工具显示名称 */
+  /** 显示名称 */
   name: string;
-  
   /** 是否启用 */
   enabled: boolean;
-  
-  /** 工具图标类型 */
+  /** 图标标识 */
   icon: string;
 }
 
-/**
- * 会话接口
- */
-export interface Session {
-  /** 会话唯一标识 */
-  id: string;
-  
-  /** 会话标题 */
-  title: string;
-  
-  /** 最后一条消息预览 */
-  lastMessage?: string;
-  
-  /** 最后活跃时间 */
-  lastActive: number;
-  
-  /** 消息数量 */
-  messageCount: number;
-}
+/** 预定义的工具配置列表 */
+export const DEFAULT_TOOLS: ToolConfig[] = [
+  { id: 'read', name: '读取文件', enabled: true, icon: 'file' },
+  { id: 'bash', name: '执行命令', enabled: true, icon: 'terminal' },
+  { id: 'grep', name: '搜索代码', enabled: true, icon: 'search' },
+  { id: 'find', name: '查找文件', enabled: true, icon: 'folder' },
+  { id: 'ls', name: '列出目录', enabled: true, icon: 'list' },
+];
+
+// ── 应用状态 ───────────────────────────────────────────────────────
+
+/** AI 初始化状态 */
+export type AIInitStatus = 'loading' | 'ready' | 'error';
+
+// ── Electron IPC 类型 ──────────────────────────────────────────────
 
 /**
- * Electron API 类型定义
- * 用于类型安全的 IPC 通信
+ * Electron API 接口
+ *
+ * 由 preload.ts 通过 contextBridge 暴露到 window.electronAPI
+ * 所有方法签名必须与 preload.ts 中的实现严格一致
  */
 export interface ElectronAPI {
-  /**
-   * 发送消息到主进程
-   * @param message - 用户消息
-   * @returns 操作结果
-   */
+  // 消息
   sendMessage: (message: string) => Promise<{ success?: boolean; error?: string }>;
-  
-  /**
-   * 监听 AI 流式输出
-   * @param callback - 接收文本增量的回调
-   */
-  onAIDelta: (callback: (event: unknown, delta: string) => void) => void;
-  
-  /**
-   * 移除 AI 流式输出监听器
-   */
-  removeAIDeltaListener: () => void;
+
+  // AI 事件监听（main → renderer）
+  onAIDelta: (callback: (delta: string) => void) => void;
+  onAIStreamEnd: (callback: () => void) => void;
+  onAIInitSuccess: (callback: () => void) => void;
+  onAIInitError: (callback: (message: string) => void) => void;
+  removeAllAIListeners: () => void;
+
+  // 窗口控制
+  windowMinimize: () => Promise<void>;
+  windowMaximize: () => Promise<void>;
+  windowClose: () => Promise<void>;
+  windowIsMaximized: () => Promise<boolean>;
+
+  // 工具配置
+  getTools: () => Promise<string[]>;
+  setTools: (tools: string[]) => Promise<{ success: boolean }>;
+  getInitStatus: () => Promise<{ initialized: boolean }>;
 }
 
-/**
- * 扩展 Window 接口，添加 electronAPI
- */
+/** 扩展 Window 接口 */
 declare global {
   interface Window {
     electronAPI: ElectronAPI;

@@ -1,41 +1,20 @@
 /**
  * 设置面板组件
- * 
- * 功能：
- * - 工具配置
- * - 模型选择
- * - 其他设置项
- * 
- * UX 改进（基于 UI/UX Pro Max）：
- * - 点击遮罩关闭
- * - Spring 弹跳动画
- * - 更好的表单反馈
- * - 无障碍支持
+ *
+ * 模态弹窗，展示工具配置和关于信息
+ * 点击遮罩或关闭按钮关闭
  */
 
 import { motion } from 'framer-motion';
-import { X, Wrench, FileText, Terminal, Search, FolderOpen, List } from 'lucide-react';
+import { X, Wrench } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { getToolIcon } from '../lib/icons';
 import { ToolConfig } from '../types';
 import { ToggleSwitch } from './ToggleSwitch';
 
-/**
- * 工具图标映射
- */
-const TOOL_ICONS: Record<string, React.ElementType> = {
-  file: FileText,
-  terminal: Terminal,
-  search: Search,
-  folder: FolderOpen,
-  list: List,
-};
-
 interface SettingsPanelProps {
-  /** 工具列表 */
   tools: ToolConfig[];
-  /** 切换工具状态 */
   onToggleTool: (toolId: string) => void;
-  /** 关闭面板 */
   onClose: () => void;
 }
 
@@ -60,7 +39,7 @@ export function SettingsPanel({ tools, onToggleTool, onClose }: SettingsPanelPro
         className="bg-surface rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-border"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── 面板头部 ── */}
+        {/* ── 头部 ── */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="text-lg font-semibold text-text-primary">设置</h2>
           <button
@@ -72,7 +51,7 @@ export function SettingsPanel({ tools, onToggleTool, onClose }: SettingsPanelPro
           </button>
         </div>
 
-        {/* ── 面板内容 ── */}
+        {/* ── 内容 ── */}
         <div className="px-6 py-5 space-y-6 max-h-[60vh] overflow-y-auto">
           {/* 工具配置 */}
           <section>
@@ -82,10 +61,10 @@ export function SettingsPanel({ tools, onToggleTool, onClose }: SettingsPanelPro
                 工具配置
               </h3>
             </div>
-            
+
             <div className="space-y-2">
               {tools.map((tool) => {
-                const Icon = TOOL_ICONS[tool.icon] || Wrench;
+                const Icon = getToolIcon(tool.icon);
                 return (
                   <div
                     key={tool.id}
@@ -100,7 +79,7 @@ export function SettingsPanel({ tools, onToggleTool, onClose }: SettingsPanelPro
                       </div>
                       <span className="text-sm text-text-primary">{tool.name}</span>
                     </div>
-                    
+
                     <ToggleSwitch
                       enabled={tool.enabled}
                       onChange={() => onToggleTool(tool.id)}
@@ -112,7 +91,7 @@ export function SettingsPanel({ tools, onToggleTool, onClose }: SettingsPanelPro
             </div>
           </section>
 
-          {/* 关于信息 */}
+          {/* 关于 */}
           <section className="pt-4 border-t border-border">
             <h3 className="text-sm font-medium text-text-secondary mb-3">关于</h3>
             <div className="space-y-1.5 text-sm text-text-muted">

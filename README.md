@@ -1,100 +1,86 @@
-# 💬 AI 编码助手
+# AI 编码助手
 
-基于 pi-coding-agent 和 Electron 的智能编码助手，支持命令行和图形界面两种使用方式。
+基于 pi-coding-agent SDK + Electron + React 的智能编码助手桌面应用。
 
-## ✨ 特性
+## 特性
 
-- 🤖 **AI 驱动** - 使用 DeepSeek V4 Flash 模型
-- 💬 **图形界面** - 现代化的聊天对话框
-- ⚡ **流式输出** - 打字机效果的实时响应
-- 🔧 **多功能** - 读取文件、执行命令、搜索代码
-- 📦 **轻量级** - 原生 HTML/CSS/JS，无构建工具依赖
+- **AI 驱动** — DeepSeek V4 Flash 模型，支持 1M 上下文窗口
+- **图形界面** — React + Tailwind CSS 构建的现代化聊天界面
+- **流式输出** — 打字机效果的实时响应
+- **多功能工具** — 读取文件、执行命令、搜索代码、查找文件、列出目录
+- **自定义标题栏** — 无边框窗口 + 原生风格的窗口控制按钮
+- **暗色模式** — 自动跟随系统主题
+- **无障碍** — 支持 prefers-reduced-motion、焦点环、aria 标签
 
-## 🚀 快速开始
-
-### 方式 1：命令行版本
-
-```bash
-pnpm install
-pnpm dev
-```
-
-### 方式 2：Electron 桌面应用
+## 快速开始
 
 ```bash
 pnpm install
-pnpm approve-builds  # 首次运行需要
-pnpm electron
+pnpm approve-builds   # 首次运行需要，允许 electron 构建
+pnpm electron         # 启动 Electron 桌面应用
 ```
 
-## 📁 项目结构
+## 项目结构
 
 ```
-pi-agent-app/
-├── src/
-│   ├── index.ts              # 命令行版本入口
-│   ├── electron-main.ts      # Electron 主进程
-│   ├── preload.ts            # 预加载脚本
-│   └── renderer/
-│       ├── index.html        # 前端界面（骨架）
-│       ├── styles.css        # 样式文件（分离）
-│       └── electron.d.ts     # TypeScript 类型定义
-├── docs/                     # 文档目录
-│   ├── QUICKSTART.md         # 快速启动指南
-│   ├── CODE_REVIEW.md        # 代码审查报告
-│   ├── TYPESCRIPT_GUIDE.md   # TypeScript 学习指南
-│   └── ELECTRON_README.md    # Electron 版本指南
-├── .env                      # 环境变量（需自行创建）
-├── package.json
-└── tsconfig.json
+src/
+├── electron-main.ts          # Electron 主进程（AI 会话 + IPC + 窗口管理）
+├── preload.ts                # 安全桥（暴露 IPC API 给 renderer）
+├── cli.ts                    # 命令行版本入口（独立于 Electron）
+└── renderer/
+    ├── index.html            # HTML 入口
+    ├── main.tsx              # React 挂载点
+    ├── App.tsx               # 根组件（状态管理 + 布局）
+    ├── index.css             # 全局样式 + CSS 变量（语义化设计系统）
+    ├── types.ts              # TypeScript 类型定义
+    ├── lib/
+    │   ├── utils.ts          # cn() 工具函数
+    │   └── icons.ts          # 共享图标映射
+    └── components/
+        ├── TitleBar.tsx       # 自定义标题栏（窗口拖拽 + 控制按钮）
+        ├── ChatArea.tsx       # 聊天区域（消息列表 + 输入框 + 状态栏）
+        ├── MessageBubble.tsx  # 消息气泡（代码块格式化 + 复制按钮）
+        ├── Sidebar.tsx        # 侧边栏（工具开关 + 操作按钮）
+        ├── SettingsPanel.tsx  # 设置面板（模态弹窗）
+        ├── ToggleSwitch.tsx   # 无障碍切换开关
+        └── TypingIndicator.tsx # 打字指示器动画
 ```
 
-## 📚 文档
+## 架构
 
-- **[快速启动](docs/QUICKSTART.md)** - 3 分钟快速开始教程
-- **[代码审查](docs/CODE_REVIEW.md)** - 代码质量报告（5/5 评分）
-- **[TypeScript 指南](docs/TYPESCRIPT_GUIDE.md)** - 语法详解（10 个核心概念）
-- **[Electron 指南](docs/ELECTRON_README.md)** - Electron 版本使用说明
+```
+主进程 (electron-main.ts)
+  ├── pi-coding-agent SDK → AI 会话管理
+  ├── IPC 处理器 ← renderer 请求
+  └── 事件推送 → renderer
+  
+预加载 (preload.ts)
+  └── contextBridge → 安全暴露 API
 
-## 🎯 使用示例
+渲染进程 (renderer/)
+  ├── React 组件树 → UI
+  └── window.electronAPI → 与主进程通信
+```
 
-可以向 AI 提问：
+## 环境变量
 
-1. "当前目录下有哪些文件？"
-2. "读取 package.json 的内容"
-3. "帮我写一个计算斐波那契数列的函数"
-4. "搜索所有 .ts 文件中的 async 关键字"
-5. "介绍一下这个项目的结构"
-
-## 🛠️ 技术栈
-
-- **Electron** - 桌面应用框架
-- **TypeScript** - 类型安全
-- **pi-coding-agent** - AI 编码代理 SDK
-- **原生 HTML/CSS/JS** - 轻量级前端
-
-## 📝 环境变量
-
-需要在项目根目录创建 `.env` 文件：
+在项目根目录创建 `.env` 文件：
 
 ```env
 DEEPSEEK_API_KEY=sk-your-api-key-here
 ```
 
-## 🎓 学习价值
+## 技术栈
 
-本项目适合学习：
+| 层 | 技术 |
+|---|---|
+| 桌面框架 | Electron 35 |
+| 前端 | React 19 + TypeScript 6 |
+| 构建 | Vite 8 + Tailwind CSS 4 |
+| AI SDK | pi-coding-agent 0.75.4 |
+| 动画 | Framer Motion |
+| 图标 | Lucide React |
 
-- ✅ TypeScript 基础（有详细注释）
-- ✅ Electron 架构（主进程/渲染进程/IPC）
-- ✅ 进程间通信机制
-- ✅ 安全最佳实践（preload 脚本）
-- ✅ 前端工程（HTML/CSS/JS 分离）
-
-## 📄 许可证
+## 许可证
 
 MIT
-
----
-
-**最后更新：** 2026-05-23

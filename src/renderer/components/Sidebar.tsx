@@ -1,16 +1,8 @@
 /**
  * 侧边栏组件
- * 
- * 功能：
- * - 显示应用标题和状态
- * - 工具开关管理
- * - 清空对话、设置等操作按钮
- * 
- * UX 改进（基于 UI/UX Pro Max）：
- * - 触摸目标 ≥44×44px
- * - 微交互动画 150-300ms
- * - 更好的视觉层次
- * - 无障碍标签
+ *
+ * 功能：应用标题、工具开关、清空对话、设置按钮
+ * 支持折叠/展开动画
  */
 
 import { motion } from 'framer-motion';
@@ -20,40 +12,19 @@ import {
   Trash2,
   PanelLeftClose,
   PanelLeftOpen,
-  Terminal,
-  Search,
-  FolderOpen,
-  FileText,
-  List,
   Wrench,
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { getToolIcon } from '../lib/icons';
 import { ToolConfig } from '../types';
 import { ToggleSwitch } from './ToggleSwitch';
 
-/**
- * 工具图标映射
- */
-const TOOL_ICONS: Record<string, React.ElementType> = {
-  file: FileText,
-  terminal: Terminal,
-  search: Search,
-  folder: FolderOpen,
-  list: List,
-};
-
 interface SidebarProps {
-  /** 侧边栏是否折叠 */
   collapsed: boolean;
-  /** 切换折叠状态 */
   onToggleCollapse: () => void;
-  /** 清空对话 */
   onClearChat: () => void;
-  /** 打开设置 */
   onOpenSettings: () => void;
-  /** 工具列表 */
   tools: ToolConfig[];
-  /** 切换工具状态 */
   onToggleTool: (toolId: string) => void;
 }
 
@@ -75,7 +46,7 @@ export function Sidebar({
         'shadow-sm relative z-10'
       )}
     >
-      {/* ── 顶部标题区域 ── */}
+      {/* ── 顶部标题 ── */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-border">
         {!collapsed && (
           <motion.div
@@ -105,7 +76,7 @@ export function Sidebar({
         </button>
       </div>
 
-      {/* ── 工具列表区域 ── */}
+      {/* ── 工具列表 ── */}
       {!collapsed && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -119,19 +90,17 @@ export function Sidebar({
               可用工具
             </span>
           </div>
-          
+
           <div className="space-y-1">
             {tools.map((tool) => {
-              const Icon = TOOL_ICONS[tool.icon] || Wrench;
+              const Icon = getToolIcon(tool.icon);
               return (
                 <div
                   key={tool.id}
                   className={cn(
                     'flex items-center justify-between px-3 py-2 rounded-lg',
                     'transition-colors duration-200',
-                    tool.enabled
-                      ? 'bg-primary/5'
-                      : 'bg-transparent'
+                    tool.enabled ? 'bg-primary/5' : 'bg-transparent'
                   )}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -158,7 +127,7 @@ export function Sidebar({
         </motion.div>
       )}
 
-      {/* ── 底部操作按钮 ── */}
+      {/* ── 底部操作 ── */}
       <div className="border-t border-border px-3 py-3 space-y-1">
         <button
           onClick={onClearChat}
@@ -173,7 +142,7 @@ export function Sidebar({
           <Trash2 className="w-4 h-4 flex-shrink-0" />
           {!collapsed && <span className="text-sm">清空对话</span>}
         </button>
-        
+
         <button
           onClick={onOpenSettings}
           className={cn(
