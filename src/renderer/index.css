@@ -10,6 +10,7 @@
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* font-display: swap is set in the URL (&display=swap) to prevent FOIT */
 @import "tailwindcss";
 
 @theme {

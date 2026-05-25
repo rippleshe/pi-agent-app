@@ -134,7 +134,7 @@ export function ChatArea({ messages, streamingContent, isWaiting, aiStatus, aiEr
                 'bg-slate-50 border transition-all duration-200',
                 'text-slate-900 placeholder:text-slate-400',
                 'focus:outline-none resize-none',
-                'min-h-[40px] max-h-[100px]',
+                'min-h-[48px] max-h-[100px]',
                 'disabled:opacity-50 disabled:cursor-not-allowed',
                 isFocused
                   ? 'border-emerald-300 bg-white shadow-[0_0_0_3px_rgba(34,197,94,0.1)]'
@@ -146,7 +146,7 @@ export function ChatArea({ messages, streamingContent, isWaiting, aiStatus, aiEr
             whileHover={canSend ? { scale: 1.04 } : {}}
             whileTap={canSend ? { scale: 0.96 } : {}}
             className={cn(
-              'flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 cursor-pointer',
+              'flex items-center justify-center w-10 h-[48px] rounded-xl transition-all duration-200 cursor-pointer',
               canSend
                 ? 'bg-emerald-500 text-white shadow-sm hover:bg-emerald-600 hover:shadow-md'
                 : 'bg-slate-100 text-slate-300 cursor-not-allowed'
