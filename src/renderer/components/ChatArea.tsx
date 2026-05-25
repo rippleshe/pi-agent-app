@@ -1,16 +1,10 @@
 /**
- * 聊天区域组件
+ * 聊天区域 — 清新典雅风格
  *
- * 【组件的 Props 模式】
- * 这个组件不管理自己的核心数据（消息、AI 状态），
- * 而是通过 props 从父组件 (App) 接收数据。
- *
- * 这叫"受控组件"——组件的显示完全由外部数据控制。
- * 好处：数据只有一个来源（App），不会出现"两个地方的值不一致"的问题。
- *
- * 【interface 定义 Props 类型】
- * 下面的 ChatAreaProps 描述了这个组件接受哪些 props。
- * 父组件传错类型，TypeScript 会报错。
+ * 设计要点：
+ * - 极简顶部状态栏，不抢视觉焦点
+ * - 消息区大量留白，呼吸感
+ * - 输入框圆润柔和，底部半透明毛玻璃
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -21,244 +15,140 @@ import { Message, AIInitStatus } from '../types';
 import { MessageBubble } from './MessageBubble';
 import { TypingIndicator } from './TypingIndicator';
 
-/**
- * Props 类型定义
- *
- * 【为什么要定义 Props 接口？】
- * TypeScript 会检查父组件传入的 props 是否符合这个接口。
- * 比如漏传了 messages，编译时就会报错，而不是运行时白屏。
- */
 interface ChatAreaProps {
-  messages: Message[];        // 消息列表
-  streamingContent: string;   // 当前流式输出内容
-  isWaiting: boolean;         // 是否在等待 AI 响应
-  aiStatus: AIInitStatus;     // AI 初始化状态
-  aiError: string | null;     // AI 错误信息（null 表示无错误）
-  onSendMessage: (content: string) => void; // 发送消息的回调
+  messages: Message[];
+  streamingContent: string;
+  isWaiting: boolean;
+  aiStatus: AIInitStatus;
+  aiError: string | null;
+  onSendMessage: (content: string) => void;
 }
 
-export function ChatArea({
-  messages,
-  streamingContent,
-  isWaiting,
-  aiStatus,
-  aiError,
-  onSendMessage,
-}: ChatAreaProps) {
-
-  // ── 本地状态（只跟 UI 交互有关，不需要提升到 App）────────────────
-
-  /** 输入框内容 */
+export function ChatArea({ messages, streamingContent, isWaiting, aiStatus, aiError, onSendMessage }: ChatAreaProps) {
   const [input, setInput] = useState('');
-
-  /** 输入框是否聚焦（用于边框高亮） */
   const [isInputFocused, setIsInputFocused] = useState(false);
-
-  // ── Ref：引用 DOM 元素 ──────────────────────────────────────────
-  //
-  // 【useRef 是什么？】
-  // useRef 创建一个"可变的引用对象"，常用于两种场景：
-  // 1. 引用 DOM 元素（如 <div ref={myRef}>，之后 myRef.current 就是这个 div）
-  // 2. 存储不触发重新渲染的可变值（类似"实例变量"）
-  //
-  // 这里用于引用 DOM 元素，以便调用原生 API（如 scrollTop）。
-  //
-  /** 聊天消息容器（用于自动滚动） */
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-  //                         ^^^^^^^^^^^^^^^^^^^^
-  //                         泛型参数：告诉 useRef 这个引用指向什么类型的 DOM 元素
-  //                         HTMLDivElement 对应 <div>，可以访问 scrollTop 等属性
-
-  /** 输入框 textarea */
+  const chatRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // ── 自动滚动到底部 ──────────────────────────────────────────────
+  // 自动滚动
   useEffect(() => {
-    const container = chatContainerRef.current;
-    if (!container) return;
-
-    // requestAnimationFrame 确保在 DOM 更新后再滚动
-    // 否则新消息还没渲染，滚动位置算不对
-    const raf = requestAnimationFrame(() => {
-      container.scrollTop = container.scrollHeight;
-      // scrollHeight 是内容总高度，scrollTop 设为它就滚到底了
-    });
-
-    // 清理：取消未执行的 rAF
+    const el = chatRef.current;
+    if (!el) return;
+    const raf = requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
     return () => cancelAnimationFrame(raf);
-  }, [messages, streamingContent]); // 消息或流式内容变化时滚动
+  }, [messages, streamingContent]);
 
-  // ── 自适应输入框高度 ────────────────────────────────────────────
+  // 自适应输入框
   useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 100)}px`;
+  }, [input]);
 
-    // 先重置为 auto（让浏览器重新计算内容高度）
-    textarea.style.height = 'auto';
-    // 再设为实际内容高度（但不超过 120px）
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
-  }, [input]); // 输入内容变化时调整
-
-  // ── 处理发送 ────────────────────────────────────────────────────
   const handleSend = useCallback(() => {
     if (!input.trim() || isWaiting) return;
-    onSendMessage(input.trim()); // 调用父组件传来的回调
-    setInput('');                 // 清空输入框
-    // 重置输入框高度
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
+    onSendMessage(input.trim());
+    setInput('');
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
   }, [input, isWaiting, onSendMessage]);
 
-  // ── 键盘事件 ────────────────────────────────────────────────────
-  /**
-   * Enter 发送，Shift+Enter 换行
-   *
-   * 【preventDefault()】
-   * 阻止浏览器的默认行为。textarea 中 Enter 默认是换行，
-   * 我们要改成发送，所以需要阻止默认的换行行为。
-   */
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   }, [handleSend]);
 
-  // ── 派生状态 ────────────────────────────────────────────────────
-  // 这些值是从已有状态"推导"出来的，不需要单独的 useState
   const isEmptyChat = messages.length <= 1 && !streamingContent;
-  const canSend = input.trim() && !isWaiting && aiStatus === 'ready';
+  const canSend = !!input.trim() && !isWaiting && aiStatus === 'ready';
 
-  // ── JSX 渲染 ────────────────────────────────────────────────────
   return (
     <div className="flex-1 flex flex-col bg-background min-h-0">
 
-      {/* ═══ 顶部状态栏 ═══ */}
-      <header className="flex items-center gap-3 px-5 py-3 bg-surface/80 backdrop-blur-xl border-b border-border">
-        {/* AI 头像图标 */}
-        <motion.div
-          className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-md"
-          // 【Framer Motion 动画 props】
-          // whileHover: 鼠标悬停时的动画
-          // whileTap: 鼠标按下时的动画
-          // scale: 缩放倍数（1 = 原始大小）
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Bot className="w-5 h-5 text-white" />
-        </motion.div>
-
+      {/* ── 顶部状态栏 ── */}
+      <header className="flex items-center gap-3 px-6 h-14 bg-surface/40 backdrop-blur-md border-b border-border/30">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/80 to-primary-dark/80 flex items-center justify-center">
+          <Bot className="w-3.5 h-3.5 text-white" />
+        </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-base font-semibold text-text-primary truncate">
-            AI 编码助手
-          </h1>
-          {/* 状态指示器：小圆点 + 文字 */}
-          <div className="flex items-center gap-1.5">
-            {/* 动态类名：根据状态显示不同颜色 */}
+          <h1 className="text-sm font-medium text-text-primary">AI 编码助手</h1>
+          <div className="flex items-center gap-1.5 mt-0.5">
             <span className={cn(
-              'inline-block w-1.5 h-1.5 rounded-full',
+              'w-1.5 h-1.5 rounded-full',
               aiStatus === 'loading' && 'bg-warning animate-pulse',
               aiStatus === 'ready' && (isWaiting ? 'bg-warning animate-pulse' : 'bg-success'),
               aiStatus === 'error' && 'bg-error',
             )} />
-            <span className="text-xs text-text-secondary">
-              {aiStatus === 'loading' && '正在初始化...'}
-              {aiStatus === 'error' && `初始化失败：${aiError || '未知错误'}`}
-              {aiStatus === 'ready' && (isWaiting ? '正在思考...' : 'DeepSeek V4 Flash 在线')}
+            <span className="text-[11px] text-text-muted">
+              {aiStatus === 'loading' && '初始化中...'}
+              {aiStatus === 'error' && (aiError || '初始化失败')}
+              {aiStatus === 'ready' && (isWaiting ? '思考中...' : 'DeepSeek V4 Flash')}
             </span>
           </div>
         </div>
       </header>
 
-      {/* ═══ 消息列表区域 ═══ */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 space-y-6">
+      {/* ── 消息区 ── */}
+      <div ref={chatRef} className="flex-1 overflow-y-auto px-4 py-8 sm:px-8 space-y-6">
 
-        {/* 空状态欢迎画面 */}
+        {/* 空状态 */}
         {isEmptyChat && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="flex flex-col items-center justify-center py-12 text-center"
+            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            className="flex flex-col items-center justify-center py-20 text-center"
           >
-            {/* 呼吸动画图标 */}
             <motion.div
-              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary-dark/20 flex items-center justify-center mb-4"
-              animate={{ scale: [1, 1.05, 1], rotate: [0, 5, -5, 0] }}
+              className="w-14 h-14 rounded-2xl bg-primary/[0.06] flex items-center justify-center mb-5"
+              animate={{ scale: [1, 1.03, 1] }}
               transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             >
-              <Sparkles className="w-8 h-8 text-primary" />
+              <Sparkles className="w-6 h-6 text-primary/60" />
             </motion.div>
-            <h2 className="text-lg font-semibold text-text-primary mb-2">
-              你好！我是你的 AI 编码助手
+            <h2 className="text-base font-medium text-text-primary mb-1.5">
+              有什么可以帮你的？
             </h2>
-            <p className="text-sm text-text-secondary max-w-sm">
-              我可以帮你读取文件、执行命令、搜索代码、分析项目结构等。试试问我一些问题吧！
+            <p className="text-[13px] text-text-muted max-w-xs leading-relaxed">
+              读取文件、执行命令、搜索代码、分析项目结构...
             </p>
           </motion.div>
         )}
 
-        {/* AI 初始化错误提示 */}
+        {/* 初始化错误 */}
         {aiStatus === 'error' && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 px-4 py-3 bg-error-light border border-error/20 rounded-xl text-sm text-error"
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            className="flex items-center gap-3 px-4 py-3 bg-error-light/50 border border-error/10 rounded-xl text-[13px] text-error max-w-xl mx-auto"
           >
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <div>
-              <p className="font-medium">AI 初始化失败</p>
-              <p className="text-error/80 text-xs mt-0.5">
-                {aiError || '请检查 .env 中的 DEEPSEEK_API_KEY 是否正确'}
-              </p>
-            </div>
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <span>{aiError || '请检查 DEEPSEEK_API_KEY'}</span>
           </motion.div>
         )}
 
-        {/* 历史消息列表 */}
-        {/* 【AnimatePresence + mode="popLayout"】
-            Framer Motion 的组件，让列表项在添加/移除时有动画效果。
-            mode="popLayout" 让移除的元素从布局流中弹出，不挤压其他元素。 */}
+        {/* 消息列表 */}
         <AnimatePresence mode="popLayout">
-          {messages.map((message) => (
-            // 【key 属性】
-            // React 要求列表中的每个元素都有唯一的 key。
-            // key 帮助 React 识别哪些元素变了、增了、删了，从而高效更新 DOM。
-            // 用 message.id 而不是数组索引（index），因为 id 是稳定的。
-            <MessageBubble key={message.id} message={message} />
-          ))}
+          {messages.map((msg) => <MessageBubble key={msg.id} message={msg} />)}
         </AnimatePresence>
 
-        {/* 正在流式输出的消息 */}
+        {/* 流式输出 */}
         {streamingContent && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex gap-3"
-          >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center flex-shrink-0 shadow-sm">
-              <Bot className="w-4 h-4 text-white" />
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex gap-3 max-w-3xl">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/80 to-primary-dark/80 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Bot className="w-3.5 h-3.5 text-white" />
             </div>
-            <div className="flex-1 max-w-[85%] sm:max-w-[75%]">
-              <div className="bg-surface rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-border/50">
-                <div className="text-text-primary text-sm leading-relaxed whitespace-pre-wrap break-words">
-                  {streamingContent}
-                </div>
+            <div className="flex-1 bg-surface rounded-2xl rounded-tl-md px-4 py-3 shadow-xs border border-border/30">
+              <div className="text-[13px] text-text-primary leading-relaxed whitespace-pre-wrap break-words">
+                {streamingContent}
               </div>
             </div>
           </motion.div>
         )}
 
-        {/* 打字指示器（等待但还没有流式输出时显示） */}
         {isWaiting && !streamingContent && <TypingIndicator />}
       </div>
 
-      {/* ═══ 输入区域 ═══ */}
-      <div className="bg-surface/80 backdrop-blur-xl border-t border-border px-4 py-4 sm:px-6">
-        <div className="flex gap-3 items-end max-w-4xl mx-auto">
-          <div className="flex-1 relative">
+      {/* ── 输入区 ── */}
+      <div className="bg-surface/60 backdrop-blur-xl border-t border-border/30 px-4 py-3 sm:px-8 sm:py-4">
+        <div className="flex gap-2.5 items-end max-w-3xl mx-auto">
+          <div className="flex-1">
             <textarea
               ref={textareaRef}
               value={input}
@@ -266,54 +156,42 @@ export function ChatArea({
               onKeyDown={handleKeyDown}
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
-              placeholder={aiStatus === 'ready' ? '输入你的问题...' : '等待 AI 初始化...'}
+              placeholder={aiStatus === 'ready' ? '输入你的问题...' : '等待初始化...'}
               rows={1}
               disabled={isWaiting || aiStatus !== 'ready'}
-              // 【cn() 动态类名】
-              // 根据 isInputFocused 切换边框颜色
               className={cn(
-                'w-full px-4 py-3 pr-12',
-                'bg-background border-2 rounded-xl',
-                'text-text-primary placeholder:text-text-muted',
-                'text-sm leading-relaxed',
-                'focus:outline-none transition-all duration-200',
-                'resize-none',
-                'min-h-[44px] max-h-[120px]',
-                'disabled:opacity-50 disabled:cursor-not-allowed',
+                'w-full px-4 py-2.5 rounded-xl text-[13px] leading-relaxed',
+                'bg-background border transition-all duration-200',
+                'text-text-primary placeholder:text-text-muted/60',
+                'focus:outline-none resize-none',
+                'min-h-[40px] max-h-[100px]',
+                'disabled:opacity-40 disabled:cursor-not-allowed',
                 isInputFocused
-                  ? 'border-primary shadow-sm'
+                  ? 'border-primary/40 shadow-[0_0_0_3px_rgba(91,154,139,0.06)]'
                   : 'border-border hover:border-border-hover'
               )}
             />
           </div>
-
-          {/* 发送按钮 */}
           <motion.button
             onClick={handleSend}
             disabled={!canSend}
-            whileHover={canSend ? { scale: 1.02 } : {}}
-            whileTap={canSend ? { scale: 0.98 } : {}}
+            whileHover={canSend ? { scale: 1.04 } : {}}
+            whileTap={canSend ? { scale: 0.96 } : {}}
             className={cn(
-              'flex items-center justify-center gap-2',
-              'px-4 py-3 rounded-xl font-medium text-sm',
-              'min-h-[44px] min-w-[44px]',
-              'transition-all duration-200',
+              'flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200',
               canSend
-                ? 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-md hover:shadow-lg active:shadow-sm'
-                : 'bg-background text-text-muted cursor-not-allowed opacity-50'
+                ? 'bg-primary text-white shadow-sm hover:shadow-md'
+                : 'bg-border/40 text-text-muted/40 cursor-not-allowed'
             )}
-            aria-label={isWaiting ? '正在等待响应' : '发送消息'}
+            aria-label="发送"
           >
-            {/* 根据状态切换图标：等待中显示旋转动画，否则显示发送箭头 */}
-            {isWaiting ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Send className="w-5 h-5" />
-            )}
+            {isWaiting
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : <Send className="w-4 h-4" />}
           </motion.button>
         </div>
-        <p className="text-xs text-text-muted mt-2 text-center select-none">
-          Enter 发送，Shift + Enter 换行
+        <p className="text-[10px] text-text-muted/50 mt-2 text-center select-none">
+          Enter 发送 · Shift+Enter 换行
         </p>
       </div>
     </div>
