@@ -12,9 +12,9 @@ export function TitleBar() {
   if (!isElectron) return null;
 
   return (
-    <div className="flex items-center h-10 bg-white border-b border-border select-none electron-drag">
+    <div className="flex items-center h-10 bg-white border-b border-slate-200 select-none electron-drag">
       <div className="flex-1 pl-4">
-        <span className="text-xs font-medium text-text-muted tracking-wide">AI 编码助手</span>
+        <span className="text-xs font-medium text-slate-400 tracking-wide">AI 编码助手</span>
       </div>
       <div className="flex items-center electron-no-drag">
         {[
@@ -26,10 +26,10 @@ export function TitleBar() {
           { icon: X, action: () => window.electronAPI?.windowClose(), label: '关闭', danger: true },
         ].map(({ icon: Icon, action, label, danger }) => (
           <button key={label} onClick={action}
-            className={cn('flex items-center justify-center w-11 h-10 transition-colors', danger ? 'hover:bg-red-50 hover:text-red-500' : 'hover:bg-gray-100')}
+            className={cn('flex items-center justify-center w-11 h-10 transition-colors cursor-pointer', danger ? 'hover:bg-red-50 hover:text-red-500' : 'hover:bg-slate-50')}
             aria-label={label}
           >
-            <Icon className="w-4 h-4 text-gray-400" />
+            <Icon className="w-4 h-4 text-slate-400" />
           </button>
         ))}
       </div>

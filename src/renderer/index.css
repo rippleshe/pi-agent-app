@@ -1,63 +1,65 @@
 /**
- * 设计系统 — 明亮清新风格
+ * Design System — AI-Native UI (Light Mode)
  *
- * 设计原则：
- * - 纯白背景 + 冷灰层次 → 明亮、干净
- * - 青碧色主调 → 清新、有活力
- * - 高对比度文字 → 清晰、易读
- * - 大量留白 → 呼吸感、优雅
+ * Based on UI/UX Pro Max recommendations:
+ * - Style: AI-Native UI (minimal chrome, conversational, streaming text)
+ * - Font: Inter (professional, neutral, clean)
+ * - Primary: Slate hierarchy for text
+ * - Accent: Emerald green for CTA / active states
+ * - Background: #f8fafc (cool gray, bright and airy)
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  /* ── 主色调：青碧（清新、有生命力）────────────────────────────────── */
-  --color-primary: #0ea5e9;
-  --color-primary-hover: #0284c7;
-  --color-primary-active: #0369a1;
-  --color-primary-light: #e0f2fe;
-  --color-primary-dark: #0369a1;
+  /* ── Accent: Emerald (CTA, active states, success) ───────────────── */
+  --color-primary: #22c55e;
+  --color-primary-hover: #16a34a;
+  --color-primary-active: #15803d;
+  --color-primary-light: #f0fdf4;
 
-  /* ── 背景层级：纯白 + 冷灰 ───────────────────────────────────────── */
+  /* ── Neutral: Slate (text hierarchy, borders, surfaces) ──────────── */
+  --color-slate-900: #0f172a;
+  --color-slate-700: #334155;
+  --color-slate-500: #64748b;
+  --color-slate-300: #cbd5e1;
+  --color-slate-200: #e2e8f0;
+  --color-slate-100: #f1f5f9;
+  --color-slate-50:  #f8fafc;
+
+  /* ── Background & Surface ────────────────────────────────────────── */
   --color-background: #f8fafc;
   --color-surface: #ffffff;
-  --color-surface-hover: #f1f5f9;
+  --color-surface-hover: #f8fafc;
 
-  /* ── 文字层级：深色文字，高对比度 ─────────────────────────────────── */
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #475569;
-  --color-text-muted: #94a3b8;
+  /* ── Text (WCAG AA compliant on white) ───────────────────────────── */
+  --color-text-primary: #0f172a;     /* 15.4:1 on white */
+  --color-text-secondary: #475569;   /* 7.5:1 on white */
+  --color-text-muted: #64748b;       /* 4.6:1 on white — meets AA */
   --color-text-inverse: #ffffff;
 
-  /* ── 边框 ────────────────────────────────────────────────────────── */
+  /* ── Borders ─────────────────────────────────────────────────────── */
   --color-border: #e2e8f0;
   --color-border-hover: #cbd5e1;
-  --color-border-focus: #0ea5e9;
+  --color-border-focus: #22c55e;
 
-  /* ── 状态色 ──────────────────────────────────────────────────────── */
-  --color-success: #10b981;
-  --color-success-light: #d1fae5;
+  /* ── Semantic States ─────────────────────────────────────────────── */
+  --color-success: #22c55e;
+  --color-success-light: #f0fdf4;
   --color-warning: #f59e0b;
-  --color-warning-light: #fef3c7;
+  --color-warning-light: #fffbeb;
   --color-error: #ef4444;
-  --color-error-light: #fee2e2;
+  --color-error-light: #fef2f2;
 
-  /* ── 阴影：明亮风格用浅色阴影 ─────────────────────────────────────── */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-
-  /* ── 圆角 ────────────────────────────────────────────────────────── */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.5rem;
+  /* ── Shadows ─────────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.06), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.06), 0 4px 6px -4px rgba(15, 23, 42, 0.03);
 }
 
-/* ── 减少动画 ──────────────────────────────────────────────────────── */
+/* ── Reduced motion ────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -65,40 +67,34 @@
   }
 }
 
-/* ── 全局重置 ──────────────────────────────────────────────────────── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ── Reset ─────────────────────────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-html {
-  font-size: 16px;
-  -webkit-text-size-adjust: 100%;
-}
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 0.9375rem;
-  line-height: 1.7;
+  line-height: 1.6;
   background: var(--color-background);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   overflow: hidden;
+  letter-spacing: -0.011em; /* Inter 的推荐字间距 */
 }
 
-/* ── 滚动条 ────────────────────────────────────────────────────────── */
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+::-webkit-scrollbar-thumb { background: var(--color-slate-300); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-slate-500); }
 
-/* ── 焦点 ──────────────────────────────────────────────────────────── */
+/* ── Focus ─────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  border-radius: 0.5rem;
 }
 
 ::selection {
@@ -106,11 +102,8 @@ body {
   color: var(--color-text-inverse);
 }
 
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-}
+a { color: var(--color-primary); text-decoration: none; }
 
-/* ── Electron 标题栏 ───────────────────────────────────────────────── */
+/* ── Electron ──────────────────────────────────────────────────────── */
 .electron-drag { -webkit-app-region: drag; }
 .electron-no-drag { -webkit-app-region: no-drag; }
