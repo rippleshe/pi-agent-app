@@ -1,14 +1,5 @@
-/**
- * 侧边栏 — 清新典雅风格
- *
- * 设计要点：
- * - 毛玻璃背景 + 柔和边框
- * - 工具图标用主色调小圆点装饰
- * - 折叠时只保留图标，宽度 56px
- */
-
 import { motion } from 'framer-motion';
-import { Bot, Settings, Trash2, PanelLeftClose, PanelLeftOpen, Wrench, Leaf } from 'lucide-react';
+import { Settings, Trash2, PanelLeftClose, PanelLeftOpen, Wrench, Zap } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { getToolIcon } from '../lib/icons';
 import { ToolConfig } from '../types';
@@ -27,60 +18,52 @@ export function Sidebar({ collapsed, onToggleCollapse, onClearChat, onOpenSettin
   return (
     <motion.aside
       initial={false}
-      animate={{ width: collapsed ? 56 : 260 }}
-      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-      className="flex flex-col bg-surface/70 backdrop-blur-xl border-r border-border/40 relative z-10"
+      animate={{ width: collapsed ? 56 : 240 }}
+      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+      className="flex flex-col bg-white border-r border-border relative z-10"
     >
       {/* ── 头部 ── */}
-      <div className="flex items-center justify-between px-3 h-14 border-b border-border/30">
+      <div className="flex items-center justify-between px-3 h-14 border-b border-border/60">
         {!collapsed && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center">
-              <Leaf className="w-3.5 h-3.5 text-white" strokeWidth={2.5} />
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-white" fill="white" />
             </div>
-            <span className="font-semibold text-sm text-text-primary tracking-tight">AI 助手</span>
+            <span className="font-semibold text-sm text-text-primary">AI 助手</span>
           </motion.div>
         )}
-        <button
-          onClick={onToggleCollapse}
-          className={cn(
-            'p-1.5 rounded-md hover:bg-surface-hover transition-colors duration-200',
-            collapsed && 'mx-auto'
-          )}
+        <button onClick={onToggleCollapse}
+          className={cn('p-1.5 rounded-lg hover:bg-gray-100 transition-colors', collapsed && 'mx-auto')}
           aria-label={collapsed ? '展开' : '折叠'}
         >
           {collapsed
-            ? <PanelLeftOpen className="w-4 h-4 text-text-muted" />
-            : <PanelLeftClose className="w-4 h-4 text-text-muted" />}
+            ? <PanelLeftOpen className="w-4 h-4 text-gray-400" />
+            : <PanelLeftClose className="w-4 h-4 text-gray-400" />}
         </button>
       </div>
 
       {/* ── 工具列表 ── */}
       {!collapsed && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.08 }} className="flex-1 overflow-y-auto px-3 py-4">
-          <div className="flex items-center gap-2 mb-3 px-1">
-            <Wrench className="w-3 h-3 text-text-muted" />
-            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-[0.1em]">工具</span>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.05 }} className="flex-1 overflow-y-auto px-3 py-4">
+          <div className="flex items-center gap-1.5 mb-3 px-1">
+            <Wrench className="w-3.5 h-3.5 text-gray-400" />
+            <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">工具</span>
           </div>
-          <div className="space-y-0.5">
+          <div className="space-y-1">
             {tools.map((tool) => {
               const Icon = getToolIcon(tool.icon);
               return (
                 <div key={tool.id} className={cn(
-                  'flex items-center justify-between px-3 py-2 rounded-lg transition-colors duration-200',
-                  tool.enabled ? 'bg-primary/[0.04]' : 'hover:bg-surface-hover'
+                  'flex items-center justify-between px-3 py-2 rounded-lg transition-colors',
+                  tool.enabled ? 'bg-sky-50' : 'hover:bg-gray-50'
                 )}>
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <Icon className={cn('w-3.5 h-3.5 flex-shrink-0', tool.enabled ? 'text-primary' : 'text-text-muted')} />
-                    <span className={cn('text-[13px]', tool.enabled ? 'text-text-primary' : 'text-text-muted')}>
+                  <div className="flex items-center gap-2.5">
+                    <Icon className={cn('w-4 h-4', tool.enabled ? 'text-sky-500' : 'text-gray-400')} />
+                    <span className={cn('text-[13px]', tool.enabled ? 'text-gray-800' : 'text-gray-400')}>
                       {tool.name}
                     </span>
                   </div>
-                  <ToggleSwitch
-                    enabled={tool.enabled}
-                    onChange={() => onToggleTool(tool.id)}
-                    label={`${tool.enabled ? '关闭' : '开启'} ${tool.name}`}
-                  />
+                  <ToggleSwitch enabled={tool.enabled} onChange={() => onToggleTool(tool.id)} label={`${tool.name}`} />
                 </div>
               );
             })}
@@ -88,21 +71,19 @@ export function Sidebar({ collapsed, onToggleCollapse, onClearChat, onOpenSettin
         </motion.div>
       )}
 
-      {/* ── 底部操作 ── */}
-      <div className="border-t border-border/30 px-2 py-2 space-y-0.5">
+      {/* ── 底部 ── */}
+      <div className="border-t border-border/60 px-2 py-2 space-y-0.5">
         {[
           { icon: Trash2, label: '清空对话', onClick: onClearChat, danger: true },
           { icon: Settings, label: '设置', onClick: onOpenSettings, danger: false },
         ].map(({ icon: Icon, label, onClick, danger }) => (
-          <button
-            key={label}
-            onClick={onClick}
+          <button key={label} onClick={onClick}
             className={cn(
-              'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200 min-h-[38px]',
-              danger ? 'text-error/70 hover:bg-error/5 hover:text-error' : 'text-text-muted hover:bg-surface-hover hover:text-text-secondary'
+              'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors min-h-[36px]',
+              danger ? 'text-red-400 hover:bg-red-50 hover:text-red-500' : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'
             )}
           >
-            <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+            <Icon className="w-4 h-4" />
             {!collapsed && <span className="text-[13px]">{label}</span>}
           </button>
         ))}

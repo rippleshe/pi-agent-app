@@ -1,10 +1,3 @@
-/**
- * 消息气泡 — 清新典雅风格
- *
- * 用户消息：右侧，主色调渐变
- * AI 消息：左侧，白底卡片，极细边框
- */
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bot, User, Copy, Check } from 'lucide-react';
@@ -14,7 +7,6 @@ import { Message } from '../types';
 
 interface Props { message: Message; }
 
-/** 复制按钮 */
 function CopyBtn({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
@@ -28,15 +20,14 @@ function CopyBtn({ text }: { text: string }) {
   };
   return (
     <button onClick={handleCopy}
-      className="absolute top-2 right-2 p-1 rounded-md bg-surface/60 hover:bg-surface border border-border/30 transition-all opacity-0 group-hover/code:opacity-100"
+      className="absolute top-2 right-2 p-1.5 rounded-md bg-white/80 hover:bg-white border border-gray-200 transition-all opacity-0 group-hover/code:opacity-100"
       aria-label={copied ? '已复制' : '复制'}
     >
-      {copied ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3 text-text-muted" />}
+      {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3 text-gray-400" />}
     </button>
   );
 }
 
-/** 解析内联代码 */
 function renderInline(text: string): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
   const re = /`([^`]+)`/g;
@@ -48,7 +39,11 @@ function renderInline(text: string): React.ReactNode[] {
         if (seg) parts.push(<span key={`t-${k++}`}>{seg}</span>);
       });
     }
-    parts.push(<code key={`c-${k++}`} className="px-1 py-0.5 bg-primary/[0.06] rounded text-[11px] font-mono text-primary/80">{m[1]}</code>);
+    parts.push(
+      <code key={`c-${k++}`} className="px-1.5 py-0.5 bg-sky-50 rounded text-xs font-mono text-sky-600">
+        {m[1]}
+      </code>
+    );
     last = m.index + m[0].length;
   }
   if (last < text.length) {
@@ -60,7 +55,6 @@ function renderInline(text: string): React.ReactNode[] {
   return parts;
 }
 
-/** 格式化内容（代码块 + 内联代码） */
 function formatContent(content: string): React.ReactNode {
   const esc = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const parts: React.ReactNode[] = [];
@@ -70,11 +64,11 @@ function formatContent(content: string): React.ReactNode {
     if (m.index > last) parts.push(<Fragment key={`t-${k++}`}>{renderInline(esc.slice(last, m.index))}</Fragment>);
     const code = m[2].trim();
     parts.push(
-      <div key={`pre-${k++}`} className="relative my-3 rounded-lg border border-border/30 overflow-hidden group/code">
-        <div className="px-3 py-1 bg-surface-hover/50 border-b border-border/20">
-          <span className="text-[10px] text-text-muted font-mono">{m[1] || 'code'}</span>
+      <div key={`pre-${k++}`} className="relative my-3 rounded-lg border border-gray-200 overflow-hidden group/code">
+        <div className="flex items-center justify-between px-3 py-1.5 bg-gray-50 border-b border-gray-100">
+          <span className="text-[11px] text-gray-400 font-mono">{m[1] || 'code'}</span>
         </div>
-        <pre className="p-3 overflow-x-auto text-[12px] font-mono text-text-primary leading-relaxed bg-surface">
+        <pre className="p-3 overflow-x-auto text-xs font-mono text-gray-700 leading-relaxed bg-white">
           <code>{code}</code>
         </pre>
         <CopyBtn text={code} />
@@ -86,7 +80,6 @@ function formatContent(content: string): React.ReactNode {
   return parts.length > 0 ? parts : renderInline(esc);
 }
 
-/** 时间格式化 */
 function formatTime(ts: number): string {
   const d = new Date(ts), now = new Date(), diff = now.getTime() - d.getTime();
   if (diff < 60000) return '刚刚';
@@ -99,37 +92,35 @@ export function MessageBubble({ message }: Props) {
   const isUser = message.role === 'user';
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-      className={cn('flex gap-2.5 group max-w-3xl', isUser ? 'ml-auto flex-row-reverse' : 'mr-auto')}
+      transition={{ duration: 0.2 }}
+      className={cn('flex gap-3 group max-w-3xl', isUser ? 'ml-auto flex-row-reverse' : 'mr-auto')}
     >
       {/* 头像 */}
       <div className={cn(
-        'w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
-        isUser
-          ? 'bg-primary/10'
-          : 'bg-gradient-to-br from-primary/70 to-primary-dark/70'
+        'w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5',
+        isUser ? 'bg-gray-200' : 'bg-sky-500'
       )}>
         {isUser
-          ? <User className="w-3 h-3 text-primary/70" />
-          : <Bot className="w-3 h-3 text-white" />}
+          ? <User className="w-3.5 h-3.5 text-gray-500" />
+          : <Bot className="w-3.5 h-3.5 text-white" />}
       </div>
 
       {/* 内容 */}
       <div className={cn('flex-1', isUser ? 'flex justify-end' : '')}>
         <div className={cn(
-          'px-3.5 py-2.5 text-[13px] leading-relaxed shadow-xs',
+          'px-4 py-2.5 text-sm leading-relaxed',
           isUser
-            ? 'bg-gradient-to-br from-primary to-primary-dark text-white rounded-2xl rounded-tr-md max-w-[80%]'
-            : 'bg-surface text-text-primary rounded-2xl rounded-tl-md border border-border/30'
+            ? 'bg-sky-500 text-white rounded-2xl rounded-tr-md shadow-sm max-w-[80%]'
+            : 'bg-white text-gray-800 rounded-2xl rounded-tl-md shadow-sm border border-gray-100'
         )}>
           {isUser
             ? <span className="whitespace-pre-wrap break-words">{message.content}</span>
             : <div>{formatContent(message.content)}</div>}
         </div>
         <span className={cn(
-          'block mt-1 text-[10px] text-text-muted/50 opacity-0 group-hover:opacity-100 transition-opacity',
+          'block mt-1 text-[10px] text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity',
           isUser ? 'text-right' : 'text-left'
         )}>
           {formatTime(message.timestamp)}

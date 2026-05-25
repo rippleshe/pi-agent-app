@@ -1,107 +1,66 @@
 /**
- * 设计系统 — 清新典雅风格
+ * 设计系统 — 明亮清新风格
  *
- * 色彩哲学：
- * - 青绿色 (sage/teal) 为主色调，自然清新
- * - 暖灰为底色，温润不刺眼
- * - 大量留白，呼吸感十足
+ * 设计原则：
+ * - 纯白背景 + 冷灰层次 → 明亮、干净
+ * - 青碧色主调 → 清新、有活力
+ * - 高对比度文字 → 清晰、易读
+ * - 大量留白 → 呼吸感、优雅
  */
 
 @import "tailwindcss";
 
 @theme {
-  /* ── 主色调：青绿渐变 ────────────────────────────────────────────── */
-  --color-primary: #5b9a8b;
-  --color-primary-hover: #4e8a7c;
-  --color-primary-active: #417a6d;
-  --color-primary-light: #e8f5f1;
-  --color-primary-dark: #3d7a6a;
-  --color-accent: #8fb4a8;
-  --color-accent-light: #f0f7f4;
+  /* ── 主色调：青碧（清新、有生命力）────────────────────────────────── */
+  --color-primary: #0ea5e9;
+  --color-primary-hover: #0284c7;
+  --color-primary-active: #0369a1;
+  --color-primary-light: #e0f2fe;
+  --color-primary-dark: #0369a1;
 
-  /* ── 背景色：暖灰层级 ────────────────────────────────────────────── */
-  --color-background: #f7f6f3;
+  /* ── 背景层级：纯白 + 冷灰 ───────────────────────────────────────── */
+  --color-background: #f8fafc;
   --color-surface: #ffffff;
-  --color-surface-hover: #fafaf8;
-  --color-surface-overlay: rgba(255, 255, 255, 0.85);
+  --color-surface-hover: #f1f5f9;
 
-  /* ── 文字色 ──────────────────────────────────────────────────────── */
-  --color-text-primary: #2c3e3a;
-  --color-text-secondary: #5f7a73;
-  --color-text-muted: #94a8a2;
+  /* ── 文字层级：深色文字，高对比度 ─────────────────────────────────── */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
   --color-text-inverse: #ffffff;
 
   /* ── 边框 ────────────────────────────────────────────────────────── */
-  --color-border: #e4e8e6;
-  --color-border-hover: #d0d8d5;
-  --color-border-focus: #5b9a8b;
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e1;
+  --color-border-focus: #0ea5e9;
 
   /* ── 状态色 ──────────────────────────────────────────────────────── */
-  --color-success: #5b9a8b;
-  --color-success-light: #e8f5f1;
-  --color-warning: #d4a574;
-  --color-warning-light: #fdf3ea;
-  --color-error: #c97b7b;
-  --color-error-light: #faf0f0;
-  --color-info: #7ba3c9;
-  --color-info-light: #eef4fa;
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
 
-  /* ── 阴影：柔和高程 ──────────────────────────────────────────────── */
-  --shadow-xs: 0 1px 2px 0 rgb(44 62 58 / 0.04);
-  --shadow-sm: 0 1px 3px 0 rgb(44 62 58 / 0.06), 0 1px 2px -1px rgb(44 62 58 / 0.04);
-  --shadow-md: 0 4px 12px -2px rgb(44 62 58 / 0.08), 0 2px 4px -2px rgb(44 62 58 / 0.04);
-  --shadow-lg: 0 12px 24px -4px rgb(44 62 58 / 0.08), 0 4px 8px -4px rgb(44 62 58 / 0.04);
-  --shadow-xl: 0 24px 48px -8px rgb(44 62 58 / 0.1), 0 8px 16px -8px rgb(44 62 58 / 0.04);
+  /* ── 阴影：明亮风格用浅色阴影 ─────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
 
   /* ── 圆角 ────────────────────────────────────────────────────────── */
-  --radius-xs: 0.25rem;
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
   --radius-2xl: 1.5rem;
-
-  /* ── 动画时长 ────────────────────────────────────────────────────── */
-  --duration-fast: 150ms;
-  --duration-normal: 250ms;
-  --duration-slow: 400ms;
-}
-
-/* ── 暗色模式 ──────────────────────────────────────────────────────── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #7ab5a5;
-    --color-primary-hover: #8ec4b5;
-    --color-primary-active: #6aa595;
-    --color-primary-light: #1a2f2a;
-    --color-accent: #6a9e90;
-    --color-accent-light: #1a2a26;
-
-    --color-background: #1a1f1d;
-    --color-surface: #232927;
-    --color-surface-hover: #2a3230;
-    --color-surface-overlay: rgba(35, 41, 39, 0.9);
-
-    --color-text-primary: #e8ede9;
-    --color-text-secondary: #a0b0a8;
-    --color-text-muted: #6a7e76;
-
-    --color-border: #333d39;
-    --color-border-hover: #445049;
-
-    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.2);
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3);
-    --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.4);
-    --shadow-lg: 0 12px 24px -4px rgb(0 0 0 / 0.4);
-    --shadow-xl: 0 24px 48px -8px rgb(0 0 0 / 0.5);
-  }
 }
 
 /* ── 减少动画 ──────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
@@ -119,27 +78,25 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 0.9375rem;
   line-height: 1.7;
   background: var(--color-background);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   overflow: hidden;
-  letter-spacing: 0.01em;
 }
 
 /* ── 滚动条 ────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
 /* ── 焦点 ──────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid var(--color-border-focus);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
@@ -152,13 +109,8 @@ body {
 a {
   color: var(--color-primary);
   text-decoration: none;
-  transition: color var(--duration-fast) ease;
-}
-a:hover {
-  color: var(--color-primary-hover);
-  text-decoration: underline;
 }
 
-/* ── Electron 标题栏拖拽 ───────────────────────────────────────────── */
+/* ── Electron 标题栏 ───────────────────────────────────────────────── */
 .electron-drag { -webkit-app-region: drag; }
 .electron-no-drag { -webkit-app-region: no-drag; }

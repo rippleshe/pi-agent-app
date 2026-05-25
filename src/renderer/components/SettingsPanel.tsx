@@ -1,11 +1,5 @@
-/**
- * 设置面板 — 清新典雅风格
- *
- * 模态弹窗，Spring 弹跳动画，点击遮罩关闭
- */
-
 import { motion } from 'framer-motion';
-import { X, Wrench, Leaf } from 'lucide-react';
+import { X, Wrench, Zap } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { getToolIcon } from '../lib/icons';
 import { ToolConfig } from '../types';
@@ -24,57 +18,53 @@ export function SettingsPanel({ tools, onToggleTool, onClose }: Props) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
-      className="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
       onClick={onClose}
       role="dialog" aria-modal="true" aria-label="设置"
     >
       <motion.div
-        initial={{ scale: 0.97, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.97, opacity: 0 }}
+        initial={{ scale: 0.97, opacity: 0, y: 8 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.97, opacity: 0, y: 8 }}
         transition={{ type: 'spring', duration: 0.35, bounce: 0.15 }}
-        className="bg-surface rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-border/30"
+        className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-gray-200"
         onClick={e => e.stopPropagation()}
       >
         {/* 头部 */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-border/30">
-          <h2 className="text-sm font-medium text-text-primary">设置</h2>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+          <h2 className="text-sm font-semibold text-gray-800">设置</h2>
           <button onClick={onClose}
-            className="p-1 rounded-md hover:bg-surface-hover transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
             aria-label="关闭"
           >
-            <X className="w-4 h-4 text-text-muted" />
+            <X className="w-4 h-4 text-gray-400" />
           </button>
         </div>
 
         {/* 内容 */}
-        <div className="px-5 py-4 space-y-5 max-h-[60vh] overflow-y-auto">
+        <div className="px-5 py-5 space-y-6 max-h-[60vh] overflow-y-auto">
 
           {/* 工具配置 */}
           <section>
-            <div className="flex items-center gap-2 mb-3">
-              <Wrench className="w-3 h-3 text-text-muted" />
-              <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-[0.1em]">工具配置</h3>
+            <div className="flex items-center gap-1.5 mb-3">
+              <Wrench className="w-3.5 h-3.5 text-gray-400" />
+              <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">工具配置</h3>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               {tools.map(tool => {
                 const Icon = getToolIcon(tool.icon);
                 return (
-                  <div key={tool.id} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-hover transition-colors">
-                    <div className="flex items-center gap-2.5">
+                  <div key={tool.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3">
                       <div className={cn(
-                        'p-1.5 rounded-md',
-                        tool.enabled ? 'bg-primary/[0.06] text-primary' : 'bg-border/30 text-text-muted'
+                        'p-2 rounded-lg',
+                        tool.enabled ? 'bg-sky-50 text-sky-500' : 'bg-gray-100 text-gray-400'
                       )}>
-                        <Icon className="w-3.5 h-3.5" />
+                        <Icon className="w-4 h-4" />
                       </div>
-                      <span className="text-[13px] text-text-primary">{tool.name}</span>
+                      <span className="text-sm text-gray-700">{tool.name}</span>
                     </div>
-                    <ToggleSwitch
-                      enabled={tool.enabled}
-                      onChange={() => onToggleTool(tool.id)}
-                      label={`${tool.enabled ? '关闭' : '开启'} ${tool.name}`}
-                    />
+                    <ToggleSwitch enabled={tool.enabled} onChange={() => onToggleTool(tool.id)} label={tool.name} />
                   </div>
                 );
               })}
@@ -82,13 +72,13 @@ export function SettingsPanel({ tools, onToggleTool, onClose }: Props) {
           </section>
 
           {/* 关于 */}
-          <section className="pt-4 border-t border-border/30">
-            <div className="flex items-center gap-2 mb-2">
-              <Leaf className="w-3 h-3 text-primary/50" />
-              <span className="text-[11px] font-semibold text-text-muted uppercase tracking-[0.1em]">关于</span>
+          <section className="pt-5 border-t border-gray-100">
+            <div className="flex items-center gap-1.5 mb-3">
+              <Zap className="w-3.5 h-3.5 text-sky-400" />
+              <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">关于</span>
             </div>
-            <div className="space-y-1 text-[12px] text-text-muted leading-relaxed">
-              <p className="font-medium text-text-secondary">AI 编码助手 v1.0.0</p>
+            <div className="space-y-1 text-sm text-gray-400">
+              <p className="font-medium text-gray-600">AI 编码助手 v1.0.0</p>
               <p>Pi-Agent SDK + DeepSeek V4 Flash</p>
             </div>
           </section>

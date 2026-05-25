@@ -5,24 +5,16 @@ import { isElectron } from '../lib/api';
 
 export function TitleBar() {
   const [isMaximized, setIsMaximized] = useState(false);
-
   useEffect(() => {
-    if (isElectron) {
-      window.electronAPI?.windowIsMaximized().then(setIsMaximized);
-    }
+    if (isElectron) window.electronAPI?.windowIsMaximized().then(setIsMaximized);
   }, []);
 
-  // 浏览器模式下不显示标题栏
   if (!isElectron) return null;
 
   return (
-    <div className={cn(
-      'flex items-center h-9 bg-surface/60 backdrop-blur-md border-b border-border/50 select-none electron-drag'
-    )}>
+    <div className="flex items-center h-10 bg-white border-b border-border select-none electron-drag">
       <div className="flex-1 pl-4">
-        <span className="text-[11px] font-medium tracking-wide text-text-muted uppercase">
-          AI Assistant
-        </span>
+        <span className="text-xs font-medium text-text-muted tracking-wide">AI 编码助手</span>
       </div>
       <div className="flex items-center electron-no-drag">
         {[
@@ -33,17 +25,11 @@ export function TitleBar() {
           }, label: isMaximized ? '还原' : '最大化' },
           { icon: X, action: () => window.electronAPI?.windowClose(), label: '关闭', danger: true },
         ].map(({ icon: Icon, action, label, danger }) => (
-          <button
-            key={label}
-            onClick={action}
-            className={cn(
-              'flex items-center justify-center w-11 h-9 transition-colors duration-100',
-              danger ? 'hover:bg-error/10 hover:text-error' : 'hover:bg-surface-hover'
-            )}
-            title={label}
+          <button key={label} onClick={action}
+            className={cn('flex items-center justify-center w-11 h-10 transition-colors', danger ? 'hover:bg-red-50 hover:text-red-500' : 'hover:bg-gray-100')}
             aria-label={label}
           >
-            <Icon className="w-3.5 h-3.5 text-text-muted" />
+            <Icon className="w-4 h-4 text-gray-400" />
           </button>
         ))}
       </div>
