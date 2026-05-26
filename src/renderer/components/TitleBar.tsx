@@ -4,32 +4,22 @@ import { cn } from '../lib/utils';
 import { isElectron } from '../lib/api';
 
 export function TitleBar() {
-  const [isMaximized, setIsMaximized] = useState(false);
-  useEffect(() => {
-    if (isElectron) window.electronAPI?.windowIsMaximized().then(setIsMaximized);
-  }, []);
-
+  const [max, setMax] = useState(false);
+  useEffect(() => { if (isElectron) window.electronAPI?.windowIsMaximized().then(setMax); }, []);
   if (!isElectron) return null;
 
   return (
-    <div className="flex items-center h-10 bg-white border-b border-slate-200 select-none electron-drag">
-      <div className="flex-1 pl-4">
-        <span className="text-xs font-medium text-slate-400 tracking-wide">AI 编码助手</span>
-      </div>
+    <div className="flex items-center h-9 bg-white border-b border-gray-200 select-none electron-drag">
+      <div className="flex-1 pl-4"><span className="text-[11px] text-gray-400 font-medium">AI 编码助手</span></div>
       <div className="flex items-center electron-no-drag">
         {[
-          { icon: Minus, action: () => window.electronAPI?.windowMinimize(), label: '最小化' },
-          { icon: isMaximized ? Copy : Square, action: async () => {
-            await window.electronAPI?.windowMaximize();
-            setIsMaximized(await window.electronAPI?.windowIsMaximized());
-          }, label: isMaximized ? '还原' : '最大化' },
-          { icon: X, action: () => window.electronAPI?.windowClose(), label: '关闭', danger: true },
-        ].map(({ icon: Icon, action, label, danger }) => (
-          <button key={label} onClick={action}
-            className={cn('flex items-center justify-center w-11 h-10 transition-colors cursor-pointer', danger ? 'hover:bg-red-50 hover:text-red-500' : 'hover:bg-slate-50')}
-            aria-label={label}
-          >
-            <Icon className="w-4 h-4 text-slate-400" />
+          { icon: Minus, fn: () => window.electronAPI?.windowMinimize(), l: '最小化' },
+          { icon: max ? Copy : Square, fn: async () => { await window.electronAPI?.windowMaximize(); setMax(await window.electronAPI?.windowIsMaximized()); }, l: '最大化' },
+          { icon: X, fn: () => window.electronAPI?.windowClose(), l: '关闭', danger: true },
+        ].map(({ icon: I, fn, l, danger }) => (
+          <button key={l} onClick={fn} aria-label={l}
+            className={cn('flex items-center justify-center w-11 h-9 transition-colors cursor-pointer', danger ? 'hover:bg-red-50' : 'hover:bg-gray-100')}>
+            <I className="w-3.5 h-3.5 text-gray-400" />
           </button>
         ))}
       </div>
