@@ -7,7 +7,7 @@
     "dev": "tsx src/cli.ts",
     "vite:dev": "vite",
     "vite:build": "vite build",
-    "electron": "concurrently \"tsc -w\" \"wait-on dist/electron-main.js && electron .\"",
+    "electron": "concurrently --kill-others \"vite\" \"tsc -w\" \"wait-on dist/electron-main.js && electron .\"",
     "electron:build": "tsc",
     "electron:start": "electron ."
   },
